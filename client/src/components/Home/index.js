@@ -217,7 +217,7 @@ const Review = (props) => {
         🎥review title: {reviewTitleValue}
         <br />
         <br />
-        🎥review body: {reviewValue}
+        🎥review body: {reviewValue.name}
         <br />
         <br />
         ⭐️review rating: {ratingValue}
@@ -229,7 +229,9 @@ const Review = (props) => {
   // var error = false
   const [reviewTitleValue, setReviewTitleValue] = React.useState("");
   const [error, setError] = React.useState(false);
-  const [reviewValue, setReviewValue] = React.useState("");
+  const [reviewValue, setReviewValue] = React.useState({
+    name: ""
+  });
   const [errorReview, setErrorReview] = React.useState(false);
   const [ratingValue, setRatingValue] = React.useState("");
   const [selectedMovie, setSelectedMovie] = React.useState("");
@@ -238,7 +240,7 @@ const Review = (props) => {
     event.preventDefault();
     if (
       reviewTitleValue.length > 0 &&
-      reviewValue.length > 0 &&
+      reviewValue.name.length > 0 &&
       ratingValue.length > 0
     ) {
       notifyAll();
@@ -248,6 +250,11 @@ const Review = (props) => {
       notify();
     }
 
+    if (reviewValue.name.length === 0) {
+      setErrorReview(true);
+      notify2();
+    }
+    
     if (ratingValue == "") {
       notify3();
     }
@@ -255,16 +262,13 @@ const Review = (props) => {
     if (reviewTitleValue.length !== 0) {
       setError(false);
     }
-    if (reviewValue.length !== 0) {
+    if (reviewValue.name.length !== 0) {
       setErrorReview(false);
     }
 
-    if (reviewValue.length === 0) {
-      setErrorReview(true);
-      notify2();
-    }
+    
     setReviewTitleValue("");
-    setReviewValue("");
+    setReviewValue({name: ""});
     setRatingValue("");
     setSelectedMovie(null);
   };
@@ -383,9 +387,12 @@ const ReviewTitle = (props) => {
 };
 
 const ReviewBody = (props) => {
-  const ReviewHandler = (event) => {
-    props.onChange(event.target.value);
+  const ReviewHandler = (name) => (event) => {
+    props.onChange({ ...props.value, [name]: event.target.value });
   };
+  const CHARACTER_LIMIT = 200;
+
+
   return (
     <Grid
       container
@@ -397,10 +404,11 @@ const ReviewBody = (props) => {
       <TextField
         style={{ margin: theme.spacing(1), minWidth: 200 }}
         id="standard-textarea"
+        label="Write Your Review"
         placeholder="Review"
-        helperText="Write Your Review"
-        onChange={ReviewHandler}
-        value={props.value}
+        helperText= {`${props.value.name.length}/${CHARACTER_LIMIT}`}
+        onChange={ReviewHandler("name")}
+        value={props.value.name}
         error={props.error}
         multiline
         minRows={5}
@@ -410,6 +418,9 @@ const ReviewBody = (props) => {
               <ReviewsIcon style={{ position: "relative", top: "-35px" }} />
             </InputAdornment>
           ),
+        }}
+        inputProps = {{
+          maxLength: CHARACTER_LIMIT
         }}
       />
     </Grid>

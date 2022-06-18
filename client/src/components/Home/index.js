@@ -21,9 +21,12 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import FormLabel from "@material-ui/core/FormLabel";
 import Icon from "@material-ui/core/Icon";
 import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 import MovieIcon from "@material-ui/icons/Movie";
 import { ToastContainer, toast, Bounce } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
 
 //Dev mode
 const serverURL = ""; //enable for dev mode
@@ -106,6 +109,7 @@ const styles = (theme) => ({
     fontWeight: "bolder",
     position: "relative",
     top: "20px",
+    minWidth: "200",
   },
 
   title: {
@@ -202,6 +206,12 @@ Home.propTypes = {
 export default withStyles(styles)(Home);
 
 const Review = (props) => {
+  // function split(str, index) {
+  //   const result = [str.slice(0, index), str.slice(index)];
+  
+  //   return result;
+  // }
+  // const [first, second] = split(reviewValue.name, 20)
   const notify = () => toast.error("🎥Please enter your review title");
   const notify2 = () => toast.error("🎥Please enter your review");
   const notify3 = () => toast.error("🎥Please enter your rating");
@@ -215,10 +225,10 @@ const Review = (props) => {
         🎥selected movie: {selectedMovie}
         <br />
         <br />
-        🎥review title: {reviewTitleValue}
+        🎥review title: {reviewTitleValue.slice(0,30) + "..."}
         <br />
         <br />
-        🎥review body: {reviewValue.name}
+        🎥review body: {reviewValue.name.slice(0, 40) + "..."}
         <br />
         <br />
         ⭐️review rating: {ratingValue}
@@ -290,8 +300,6 @@ const Review = (props) => {
     if (reviewValue.name.length !== 0) {
       setErrorReview(false);
     }
-
-    
   };
 
   return (
@@ -304,7 +312,11 @@ const Review = (props) => {
         alignItems="flex-start"
       >
         <Typography
-          style={{ margin: theme.spacing(1), fontWeight: "bolder" }}
+          style={{
+            margin: theme.spacing(1),
+            fontWeight: "bolder",
+            fontSize: "40spx",
+          }}
           variant="h3"
           gutterBottom={true}
         >
@@ -339,12 +351,15 @@ const Review = (props) => {
           fontWeight: "bolder",
           position: "relative",
           top: "20px",
+          minWidth: 200,
         }}
         endIcon={<MovieIcon />}
         onClick={submitHandler}
       >
         Submit
       </Button>
+
+
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -374,7 +389,7 @@ const MovieSelection = (props) => {
       alignItems="flex-start"
     >
       <FormControl style={{ margin: theme.spacing(1), minWidth: 200 }}>
-        <InputLabel>Title</InputLabel>
+        <InputLabel>Movie Title</InputLabel>
         <Select
           onChange={SelectedMovieHandler}
           value={props.value || null}
@@ -394,7 +409,12 @@ const MovieSelection = (props) => {
 
 const ReviewTitle = (props) => {
   const ReviewTitleHandler = (event) => {
-    props.onChange(event.target.value);
+    // if (/^\s/.test(v)) event.rc = false;
+    if (props.value === "") {
+      props.onChange(event.target.value.trim());
+    } else {
+      props.onChange(event.target.value);
+    }
   };
   return (
     <Grid
@@ -407,8 +427,7 @@ const ReviewTitle = (props) => {
       <TextField
         style={{ margin: theme.spacing(1), minWidth: 200 }}
         id="standard-secondary"
-        label="Title"
-        // helperText ={props.value}
+        label="Review Title"
         helperText="Write the Title of the Review"
         color="primary"
         error={props.error}
@@ -421,7 +440,11 @@ const ReviewTitle = (props) => {
 
 const ReviewBody = (props) => {
   const ReviewHandler = (name) => (event) => {
-    props.onChange({ ...props.value, [name]: event.target.value });
+    if (props.value.name === "") {
+      props.onChange({ ...props.value, [name]: event.target.value.trim() });
+    } else {
+      props.onChange({ ...props.value, [name]: event.target.value });
+    }
   };
   const CHARACTER_LIMIT = 200;
 
@@ -436,21 +459,13 @@ const ReviewBody = (props) => {
       <TextField
         style={{ margin: theme.spacing(1), minWidth: 200 }}
         id="standard-textarea"
-        label="Write Your Review"
-        placeholder="Review"
-        helperText={`${props.value.name.length}/${CHARACTER_LIMIT}`}
+        label="Review"
+        helperText={`Write Your Review ${props.value.name.length}/${CHARACTER_LIMIT}`}
         onChange={ReviewHandler("name")}
         value={props.value.name}
         error={props.error}
         multiline
         minRows={5}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <ReviewsIcon style={{ position: "relative", top: "-35px" }} />
-            </InputAdornment>
-          ),
-        }}
         inputProps={{
           maxLength: CHARACTER_LIMIT,
         }}
@@ -472,7 +487,7 @@ const ReviewRating = (props) => {
       alignItems="flex-start"
     >
       <FormControl
-        style={{ margin: theme.spacing(1), position: "relative", top: "10px" }}
+        style={{ margin: theme.spacing(1), position: "relative", top: "20px" }}
         error={props.error}
       >
         <FormLabel component="legend">Rate The Movie</FormLabel>
@@ -483,36 +498,42 @@ const ReviewRating = (props) => {
           component="fieldset"
           onChange={ReviewRatingHandler}
           value={props.value}
+          style={{ position: "relative", top: "10px", marginBottom: "10px" }}
         >
           <FormControlLabel
             value="1"
             control={<Radio color="primary" />}
             label="1"
             labelPlacement="bottom"
+            style={{ position: "relative", left: "-10px" }}
           />
           <FormControlLabel
             value="2"
             control={<Radio color="primary" />}
             label="2"
             labelPlacement="bottom"
+            style={{ position: "relative", left: "-30px" }}
           />
           <FormControlLabel
             value="3"
             control={<Radio color="primary" />}
             label="3"
             labelPlacement="bottom"
+            style={{ position: "relative", left: "-50px" }}
           />
           <FormControlLabel
             value="4"
             control={<Radio color="primary" />}
             label="4"
             labelPlacement="bottom"
+            style={{ position: "relative", left: "-70px" }}
           />
           <FormControlLabel
             value="5"
             control={<Radio color="primary" />}
             label="5"
             labelPlacement="bottom"
+            style={{ position: "relative", left: "-90px" }}
           />
         </RadioGroup>
       </FormControl>

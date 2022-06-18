@@ -205,6 +205,7 @@ const Review = (props) => {
   const notify = () => toast.error("🎥Please enter your review title");
   const notify2 = () => toast.error("🎥Please enter your review");
   const notify3 = () => toast.error("🎥Please enter your rating");
+  const notify4 = () => toast.error("🎥Please enter your movie title");
   const notifyAll = () =>
     toast.success(
       <p>
@@ -230,47 +231,67 @@ const Review = (props) => {
   const [reviewTitleValue, setReviewTitleValue] = React.useState("");
   const [error, setError] = React.useState(false);
   const [reviewValue, setReviewValue] = React.useState({
-    name: ""
+    name: "",
   });
   const [errorReview, setErrorReview] = React.useState(false);
   const [ratingValue, setRatingValue] = React.useState("");
+  const [errorRating, setErrorRating] = React.useState(false);
   const [selectedMovie, setSelectedMovie] = React.useState("");
+  const [errorSelected, setErrorSelected] = React.useState(false);
 
   const submitHandler = (event) => {
     event.preventDefault();
+    console.log(selectedMovie);
     if (
       reviewTitleValue.length > 0 &&
       reviewValue.name.length > 0 &&
-      ratingValue.length > 0
+      ratingValue.length > 0 &&
+      selectedMovie !== "" &&
+      ratingValue > 0
     ) {
       notifyAll();
+      setReviewTitleValue("");
+      setReviewValue({ name: "" });
+      setRatingValue("");
+      setSelectedMovie(null);
     }
-    if (reviewTitleValue.length === 0) {
+    if (reviewTitleValue === "") {
       setError(true);
       notify();
     }
 
-    if (reviewValue.name.length === 0) {
+    if (selectedMovie === "" || selectedMovie == null) {
+      setErrorSelected(true);
+      notify4();
+    }
+
+    if (reviewValue.name === "") {
       setErrorReview(true);
       notify2();
     }
-    
-    if (ratingValue == "") {
+
+    if (ratingValue === "") {
+      setErrorRating(true);
       notify3();
+    }
+
+    if (ratingValue.length !== 0) {
+      setErrorRating(false);
+    }
+
+    if (selectedMovie !== "") {
+      setErrorSelected(false);
     }
 
     if (reviewTitleValue.length !== 0) {
       setError(false);
     }
+
     if (reviewValue.name.length !== 0) {
       setErrorReview(false);
     }
 
     
-    setReviewTitleValue("");
-    setReviewValue({name: ""});
-    setRatingValue("");
-    setSelectedMovie(null);
   };
 
   return (
@@ -290,7 +311,11 @@ const Review = (props) => {
           Movie Review Website
         </Typography>
       </Grid>
-      <MovieSelection onChange={setSelectedMovie} value={selectedMovie || ""} />
+      <MovieSelection
+        onChange={setSelectedMovie}
+        value={selectedMovie || null}
+        error={errorSelected}
+      />
       <ReviewTitle
         onChange={setReviewTitleValue}
         error={error}
@@ -301,7 +326,11 @@ const Review = (props) => {
         error={errorReview}
         value={reviewValue}
       />
-      <ReviewRating onChange={setRatingValue} value={ratingValue} />
+      <ReviewRating
+        onChange={setRatingValue}
+        value={ratingValue}
+        error={errorRating}
+      />
       <Button
         variant="contained"
         color="primary"
@@ -346,7 +375,11 @@ const MovieSelection = (props) => {
     >
       <FormControl style={{ margin: theme.spacing(1), minWidth: 200 }}>
         <InputLabel>Title</InputLabel>
-        <Select onChange={SelectedMovieHandler} value={props.value}>
+        <Select
+          onChange={SelectedMovieHandler}
+          value={props.value || null}
+          error={props.error}
+        >
           <MenuItem value={"There Will Be Blood"}>There Will Be Blood</MenuItem>
           <MenuItem value={"Inception"}>Inception</MenuItem>
           <MenuItem value={"Soul"}>Soul</MenuItem>
@@ -376,7 +409,7 @@ const ReviewTitle = (props) => {
         id="standard-secondary"
         label="Title"
         // helperText ={props.value}
-        helperText="Write the Title of the Movie"
+        helperText="Write the Title of the Review"
         color="primary"
         error={props.error}
         onChange={ReviewTitleHandler}
@@ -392,7 +425,6 @@ const ReviewBody = (props) => {
   };
   const CHARACTER_LIMIT = 200;
 
-
   return (
     <Grid
       container
@@ -406,7 +438,7 @@ const ReviewBody = (props) => {
         id="standard-textarea"
         label="Write Your Review"
         placeholder="Review"
-        helperText= {`${props.value.name.length}/${CHARACTER_LIMIT}`}
+        helperText={`${props.value.name.length}/${CHARACTER_LIMIT}`}
         onChange={ReviewHandler("name")}
         value={props.value.name}
         error={props.error}
@@ -419,8 +451,8 @@ const ReviewBody = (props) => {
             </InputAdornment>
           ),
         }}
-        inputProps = {{
-          maxLength: CHARACTER_LIMIT
+        inputProps={{
+          maxLength: CHARACTER_LIMIT,
         }}
       />
     </Grid>
@@ -441,6 +473,7 @@ const ReviewRating = (props) => {
     >
       <FormControl
         style={{ margin: theme.spacing(1), position: "relative", top: "10px" }}
+        error={props.error}
       >
         <FormLabel component="legend">Rate The Movie</FormLabel>
         <RadioGroup

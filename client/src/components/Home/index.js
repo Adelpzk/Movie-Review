@@ -206,12 +206,12 @@ Home.propTypes = {
 export default withStyles(styles)(Home);
 
 const Review = (props) => {
-  // function split(str, index) {
-  //   const result = [str.slice(0, index), str.slice(index)];
-  
-  //   return result;
-  // }
-  // const [first, second] = split(reviewValue.name, 20)
+  const TitleSummarizer = (reviewTitleValue) => {if(reviewTitleValue.length > 30){
+    return reviewTitleValue.slice(0,30) + "..."
+  }
+  else{
+    return reviewTitleValue
+  }}
   const notify = () => toast.error("🎥Please enter your review title");
   const notify2 = () => toast.error("🎥Please enter your review");
   const notify3 = () => toast.error("🎥Please enter your rating");
@@ -225,10 +225,10 @@ const Review = (props) => {
         🎥selected movie: {selectedMovie}
         <br />
         <br />
-        🎥review title: {reviewTitleValue.slice(0,30) + "..."}
+        🎥review title: {TitleSummarizer(reviewTitleValue)}
         <br />
         <br />
-        🎥review body: {reviewValue.name.slice(0, 40) + "..."}
+        🎥review body: {TitleSummarizer(reviewValue.name)}
         <br />
         <br />
         ⭐️review rating: {ratingValue}

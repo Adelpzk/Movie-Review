@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import PropTypes, { array } from "prop-types";
+import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
@@ -25,9 +25,8 @@ import Box from "@material-ui/core/Box";
 import MovieIcon from "@material-ui/icons/Movie";
 import { ToastContainer, toast, Bounce } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
-import Fab from "@material-ui/core/Fab";
-import NavigationIcon from "@material-ui/icons/Navigation";
-import { List } from "@material-ui/core";
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
 
 //Dev mode
 const serverURL = "http://ov-research-4.uwaterloo.ca:3100"; //enable for dev mode
@@ -207,26 +206,13 @@ Home.propTypes = {
 export default withStyles(styles)(Home);
 
 const Review = (props) => {
-  const TitleSummarizer = (reviewTitleValue) => {
-    if (reviewTitleValue.length > 40) {
-      var words = reviewTitleValue.split(" ");
-      var totalCharacters = 0;
-      var summaryWords = new Array();
-      for (const word of words) {
-        summaryWords.push(word);
-
-        totalCharacters += word.length + 1;
-        if (totalCharacters > 40) {
-          summaryWords.push("")
-          break;
-        }
-
-        return array.joing(' ')
-      }
-    } else {
-      return reviewTitleValue;
-    }
-  };
+  const TitleSummarizer = (reviewTitleValue) => {if(reviewTitleValue.length > 30){
+    return reviewTitleValue.slice(0,40) + "..."
+  }
+  else{
+    return reviewTitleValue
+  }}
+  
   const notify = () => toast.error("🎥Please enter your review title");
   const notify2 = () => toast.error("🎥Please enter your review");
   const notify3 = () => toast.error("🎥Please enter your rating");
@@ -373,6 +359,7 @@ const Review = (props) => {
       >
         Submit
       </Button>
+
 
       <ToastContainer
         position="top-center"

@@ -30,7 +30,7 @@ import NavigationIcon from "@material-ui/icons/Navigation";
 import { List } from "@material-ui/core";
 
 //Dev mode
-const serverURL = ""; //enable for dev mode
+const serverURL = "http://ov-research-4.uwaterloo.ca:3100"; //enable for dev mode
 
 //Deployment mode instructions
 //const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
@@ -278,14 +278,14 @@ const Review = (props) => {
       setReviewTitleValue("");
       setReviewValue({ name: "" });
       setRatingValue("");
-      setSelectedMovie(null);
+      setSelectedMovie("");
     }
     if (reviewTitleValue === "") {
       setError(true);
       notify();
     }
 
-    if (selectedMovie === "" || selectedMovie == null) {
+    if (selectedMovie === "" || selectedMovie === null) {
       setErrorSelected(true);
       notify4();
     }
@@ -304,7 +304,7 @@ const Review = (props) => {
       setErrorRating(false);
     }
 
-    if (selectedMovie !== "") {
+    if (selectedMovie !== "" ) {
       setErrorSelected(false);
     }
 

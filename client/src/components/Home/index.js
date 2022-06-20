@@ -26,7 +26,7 @@ import { ToastContainer, toast, Bounce } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
 
 //Dev mode
-const serverURL = ""; //enable for dev mode
+const serverURL = "http://ov-research-4.uwaterloo.ca:apazokit"; //enable for dev mode
 
 //Deployment mode instructions
 //const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;

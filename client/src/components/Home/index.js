@@ -263,14 +263,14 @@ const Review = (props) => {
       setReviewTitleValue("");
       setReviewValue({ name: "" });
       setRatingValue("");
-      setSelectedMovie(null);
+      setSelectedMovie("");
     }
     if (reviewTitleValue === "") {
       setError(true);
       notify();
     }
 
-    if (selectedMovie === "" || selectedMovie == null) {
+    if (selectedMovie === "" || selectedMovie === null) {
       setErrorSelected(true);
       notify4();
     }
@@ -289,7 +289,7 @@ const Review = (props) => {
       setErrorRating(false);
     }
 
-    if (selectedMovie !== "") {
+    if (selectedMovie !== "" ) {
       setErrorSelected(false);
     }
 

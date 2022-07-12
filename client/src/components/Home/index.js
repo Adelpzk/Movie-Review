@@ -29,7 +29,7 @@ import Fab from "@material-ui/core/Fab";
 import NavigationIcon from "@material-ui/icons/Navigation";
 
 //Dev mode
-const serverURL =
+const serverURL = //""
   "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100"; //enable for dev mode
 
 //Deployment mode instructions
@@ -279,7 +279,7 @@ const Review = (props) => {
   }
 
   const callApiLoadMoviesList = async () => {
-    const url = serverURL + 'api/getMovies';
+    const url = serverURL + '/api/getMovies';
     const response = await fetch(url, { method: "POST" ,
   headers: {
     "Content-Type": "applications/json",

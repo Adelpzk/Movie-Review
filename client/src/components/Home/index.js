@@ -25,11 +25,12 @@ import Box from "@material-ui/core/Box";
 import MovieIcon from "@material-ui/icons/Movie";
 import { ToastContainer, toast, Bounce } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
-import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
+import Fab from "@material-ui/core/Fab";
+import NavigationIcon from "@material-ui/icons/Navigation";
 
 //Dev mode
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100"; //enable for dev mode
+const serverURL =
+  ""; //enable for dev mode
 
 //Deployment mode instructions
 //const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
@@ -206,13 +207,14 @@ Home.propTypes = {
 export default withStyles(styles)(Home);
 
 const Review = (props) => {
-  const TitleSummarizer = (reviewTitleValue) => {if(reviewTitleValue.length > 30){
-    return reviewTitleValue.slice(0,40) + "..."
-  }
-  else{
-    return reviewTitleValue
-  }}
-  
+  const TitleSummarizer = (reviewTitleValue) => {
+    if (reviewTitleValue.length > 30) {
+      return reviewTitleValue.slice(0, 40) + "...";
+    } else {
+      return reviewTitleValue;
+    }
+  };
+
   const notify = () => toast.error("🎥Please enter your review title");
   const notify2 = () => toast.error("🎥Please enter your review");
   const notify3 = () => toast.error("🎥Please enter your rating");
@@ -250,9 +252,36 @@ const Review = (props) => {
   const [selectedMovie, setSelectedMovie] = React.useState("");
   const [errorSelected, setErrorSelected] = React.useState(false);
 
+  const [moviesList, setMoviesList] = React.useState([]);
+
+  React.useEffect(() => {
+    loadMoviesList();
+  }, []);
+
+  const loadMoviesList = () => {
+    callApiLoadMoviesList().then((res) => {
+      console.log("LoadMoviesList Returned: " + res);
+      var parsed = JSON.parse(res.express);
+      setMoviesList(parsed);
+    });
+  };
+
+  const callApiLoadMoviesList = async () => {
+    const url = serverURL + 'api/getMovies';
+    console.log(url)
+    const response = await fetch(url, { method: "POST" ,
+  headers: {
+    "Content-Type": "applications/json",
+  }});
+    const body = await response.json();
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
+
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log(selectedMovie);
     if (
       reviewTitleValue.length > 0 &&
       reviewValue.name.length > 0 &&
@@ -290,7 +319,7 @@ const Review = (props) => {
       setErrorRating(false);
     }
 
-    if (selectedMovie !== "" ) {
+    if (selectedMovie !== "") {
       setErrorSelected(false);
     }
 
@@ -301,6 +330,8 @@ const Review = (props) => {
     if (reviewValue.name.length !== 0) {
       setErrorReview(false);
     }
+
+   
   };
 
   return (
@@ -326,6 +357,7 @@ const Review = (props) => {
       </Grid>
       <MovieSelection
         onChange={setSelectedMovie}
+        moviesList={moviesList}
         value={selectedMovie || null}
         error={errorSelected}
       />
@@ -360,7 +392,6 @@ const Review = (props) => {
         Submit
       </Button>
 
-
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -381,8 +412,9 @@ const MovieSelection = (props) => {
   const SelectedMovieHandler = (event) => {
     props.onChange(event.target.value || null);
   };
+  
   return (
-    <Grid
+      <Grid
       container
       spacing={0}
       direction="column"
@@ -396,11 +428,9 @@ const MovieSelection = (props) => {
           value={props.value || null}
           error={props.error}
         >
-          <MenuItem value={"There Will Be Blood"}>There Will Be Blood</MenuItem>
-          <MenuItem value={"Inception"}>Inception</MenuItem>
-          <MenuItem value={"Soul"}>Soul</MenuItem>
-          <MenuItem value={"Batman"}>Batman</MenuItem>
-          <MenuItem value={"LaLa Land"}>LaLa Land</MenuItem>
+          {props.moviesList.map((option, index) => (
+            <MenuItem value={option.name}>{option.name}</MenuItem>
+          ))}
         </Select>
         <FormHelperText>Select a Movie</FormHelperText>
       </FormControl>

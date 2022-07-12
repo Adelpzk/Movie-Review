@@ -30,7 +30,7 @@ import NavigationIcon from "@material-ui/icons/Navigation";
 
 //Dev mode
 const serverURL =
-  ""; //enable for dev mode
+  "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100"; //enable for dev mode
 
 //Deployment mode instructions
 //const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
@@ -253,6 +253,8 @@ const Review = (props) => {
   const [errorSelected, setErrorSelected] = React.useState(false);
 
   const [moviesList, setMoviesList] = React.useState([]);
+  // const [moviesId, setMoviesId] = React.useState("");
+  const [userId, setUserId] = React.useState("1")
 
   React.useEffect(() => {
     loadMoviesList();
@@ -266,9 +268,18 @@ const Review = (props) => {
     });
   };
 
+  //getting the index of the selected movie to get the movies_id
+  var names = [];
+  names = moviesList.map(obj => obj.name)
+  var indexMovieId = 0;
+  for (var i = 0; i <= names.length; i += 1){
+    if(names[i] == selectedMovie){
+      indexMovieId = i;
+    }
+  }
+
   const callApiLoadMoviesList = async () => {
     const url = serverURL + 'api/getMovies';
-    console.log(url)
     const response = await fetch(url, { method: "POST" ,
   headers: {
     "Content-Type": "applications/json",
@@ -280,8 +291,39 @@ const Review = (props) => {
     return body;
   };
 
+  const callApiAddReview = async() => {
+    const url = serverURL + '/api/addReview';
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reviewTitle: reviewTitleValue,
+        reviewContent: reviewValue.name,
+        reviewScore: parseInt(ratingValue),
+        user_userId: userId,
+        movies_id: moviesList[indexMovieId].id
+      })
+    });
+    const body = await response.json();
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  }
+
   const submitHandler = (event) => {
+    console.log(moviesList)
+    console.log("from Index :" + moviesList[1].name)
+    console.log(selectedMovie)
     event.preventDefault();
+    callApiAddReview()
+      .then(res => {
+        console.log("callApiAddReview returned: ", res)
+        var parsed = JSON.parse(res.express);
+        console.log("callApiAddReview parsed: ", parsed[0])
+      });
     if (
       reviewTitleValue.length > 0 &&
       reviewValue.name.length > 0 &&
@@ -412,7 +454,10 @@ const MovieSelection = (props) => {
   const SelectedMovieHandler = (event) => {
     props.onChange(event.target.value || null);
   };
+
   
+  
+ 
   return (
       <Grid
       container

@@ -1,0 +1,13 @@
+.body::before{
+  content: "";
+  position: fixed;
+  background: grey url(../pictures/Background.jpg) center center no-repeat;
+  left: 0;
+  background-size: cover;
+  opacity: 0.7;
+  filter: blur(3px);
+  right: 0;
+  top: 0;
+  height: 100vh;
+  z-index: -1;
+}

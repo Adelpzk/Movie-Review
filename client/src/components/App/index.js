@@ -7,6 +7,7 @@ import {
 
 import Home from '../Home';
 import PrivateRoute from '../Navigation/PrivateRoute.js';
+import Landing from '../Landing';
 
 
 
@@ -33,7 +34,7 @@ class App extends Component {
     return (
 	  <Router>
 	    <div>
-        <PrivateRoute exact path="/" component={Home}/>
+        <PrivateRoute exact path="/" component={Landing}/>
 	    </div>
 	  </Router>
     );

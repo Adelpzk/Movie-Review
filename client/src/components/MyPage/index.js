@@ -63,7 +63,7 @@ const theme = createTheme({
 //   },
 // });
 
-const serverURL = " ";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100";
 
 function MyPage(props) {
   const [selectedMovie, setSelectedMovie] = React.useState("");

@@ -27,6 +27,7 @@ import { ToastContainer, toast, Bounce } from "material-react-toastify";
 import "material-react-toastify/dist/ReactToastify.css";
 import Fab from "@material-ui/core/Fab";
 import NavigationIcon from "@material-ui/icons/Navigation";
+import { load } from "dotenv";
 
 const theme = createTheme({
   palette: {
@@ -43,36 +44,24 @@ const theme = createTheme({
   },
 });
 
-// const useStyles = makeStyles({
-//   select: {
-//     "&:before": {
-//       borderColor: "#FF8C00",
-//     },
-//     "&:after": {
-//       borderColor: "#FF8C00",
-//     },
-//     "&:not(.Mui-disabled):hover::before": {
-//       borderColor: "#FF8C00",
-//     },
-//   },
-//   icon: {
-//     fill: "#FF8C00",
-//   },
-//   root: {
-//     color: "#FF8C00",
-//   },
-// });
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100";
+
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100";
+
+const serverURL = " ";
 
 function MyPage(props) {
   const [selectedMovie, setSelectedMovie] = React.useState("");
+  const [selectedGenre, setSelectedGenre] = React.useState("");
+  const [errorGenre, setErrorGenre] = React.useState(false);
   const [errorSelected, setErrorSelected] = React.useState(false);
 
   const [reviewTitleValue, setReviewTitleValue] = React.useState("");
   const [error, setError] = React.useState(false);
 
   const [moviesList, setMoviesList] = React.useState([]);
+  const [genreList, setGenreList] = React.useState([]);
+  const [selectedMovieGenre, setselectedMovieGenre] = React.useState([]);
 
   React.useEffect(() => {
     loadMoviesList();
@@ -101,23 +90,73 @@ function MyPage(props) {
     return body;
   };
 
-  //getting the index of the selected movie to get the movies_id
+  const callApiGetGenre = async () => {
+    const url = serverURL + "/api/getGenre";
+    console.log(url);
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        movieId: moviesList[indexMovieId].id,
+      }),
+    });
+    const body = await response.json();
+    if (response.status !== 200) throw Error(body.message);
+    return body;
+  };
+
+  React.useEffect(() => {
+    loadAllGenre();
+  }, []);
+
+  const loadAllGenre = () => {
+    callApiGetAllGenre().then((res) => {
+      console.log("LoadAllGenre Returned: " + res);
+      var parsed = JSON.parse(res.express);
+      setGenreList(parsed);
+    });
+  };
+
+  const callApiGetAllGenre = async () => {
+    const url = serverURL + "/api/getAllGenre";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "applications/json",
+      },
+    });
+    const body = await response.json();
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+    return body;
+  };
+
   var names = [];
-  names = moviesList.map(obj => obj.name)
+  names = moviesList.map((obj) => obj.name);
   var indexMovieId = 0;
-  for (var i = 0; i <= names.length; i += 1){
-    if(names[i] == selectedMovie){
+  for (var i = 0; i <= names.length; i += 1) {
+    if (names[i] == selectedMovie) {
       indexMovieId = i;
     }
   }
 
-  const notify = () => toast.error(<p>Wrong guess❌! 
-    <br />
-    <br />
-    Try again, you can do it👍🏻!
-  </p> );
+  const notify = () =>
+    toast.error(
+      <p>
+        Wrong guess❌!
+        <br />
+        <br />
+        Try again, you can do it👍🏻!
+      </p>
+    );
   const notify2 = () => toast.error("🎥Please enter your movie title");
   const notify3 = () => toast.error("🎥please pick a year");
+  const notify4 = () => toast.error("🎥please pick a Genre");
   const notifyAll = () =>
     toast.success(
       <p>
@@ -127,129 +166,186 @@ function MyPage(props) {
         🎥selected movie: {selectedMovie}
         <br />
         <br />
+        🎥Genre: {selectedGenre}
+        <br />
+        <br />
         🎥Year made: {reviewTitleValue}
       </p>,
       {
         autoClose: 5000,
       }
     );
+
+  var genreIsRight = false;
+
+  var genresOfTheMovie = [];
+
+  genresOfTheMovie = selectedMovieGenre.map((obj) => obj.genre);
+
+  genresOfTheMovie.filter((element) => {
+    if (element.includes(selectedGenre)) {
+      genreIsRight = true;
+    }
+  });
+
   const submitHandler = (event) => {
-   
-    if (reviewTitleValue.length > 0 &&
-        selectedMovie !== "" &&
-        reviewTitleValue == moviesList[indexMovieId].year){
-            notifyAll();
-      }
-      else if(reviewTitleValue.length > 0 &&
-        selectedMovie !== "" &&
-        reviewTitleValue !== moviesList[indexMovieId].year){
-        notify();
-      }
+    callApiGetGenre().then((res) => {
+      console.log("callApiGetSearch returned: ", res);
+      var parsed = JSON.parse(res.express);
+      console.log("callApiGetSearch parsed: ", parsed);
+      setselectedMovieGenre(parsed);
+    });
+  
+    if (
+      reviewTitleValue.length !== "" &&
+      selectedMovie !== "" &&
+      selectedGenre !== "" &&
+      reviewTitleValue == moviesList[indexMovieId].year &&
+      genreIsRight == true
+    ) {
+      notifyAll();
+    } else if (
+      reviewTitleValue !== "" &&
+      selectedMovie !== "" &&
+      selectedGenre !== "" &&
+      (reviewTitleValue !== moviesList[indexMovieId].year ||
+      genreIsRight == false)
+    ) {
+      notify();
+    }
 
-      if (reviewTitleValue === "") {
-        setError(true);
-        notify3();
-      }
+    if (reviewTitleValue === "") {
+      setError(true);
+      notify3();
+    }
 
-      if (selectedMovie === "" || selectedMovie === null) {
-        setErrorSelected(true);
-        notify2();
-      }
+    if (selectedMovie === "" || selectedMovie === null) {
+      setErrorSelected(true);
+      notify2();
+    }
 
-      if (selectedMovie !== "") {
-        setErrorSelected(false);
-      }
+    if (selectedGenre === "") {
+      setErrorGenre(true);
+      notify4();
+    }
 
-      if (reviewTitleValue.length !== 0) {
-        setError(false);
-      }
-    
-  }
+    if (selectedMovie !== "") {
+      setErrorSelected(false);
+    }
+
+    if (selectedGenre !== "") {
+      setErrorGenre(false);
+    }
+
+    if (reviewTitleValue.length !== 0) {
+      setError(false);
+    }
+  };
 
   return (
     <MuiThemeProvider theme={theme}>
-        <div >
-          <CssBaseline />
-        </div>
-    <Grid
-      container
-      spacing={0}
-      direction="column"
-      justifyContent="center"
-      alignItems="flex-start"
-    >
-      <Typography
-        style={{
-          margin: theme.spacing(1),
-          fontWeight: "bolder",
-          fontSize: "40spx",
-          color: "Black",
-        }}
-        variant="h3"
-        gutterBottom={true}
+      <div>
+        <CssBaseline />
+      </div>
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        justifyContent="center"
+        alignItems="flex-start"
       >
-        Welcome to my small game of guess and check🎮!
-      </Typography>
-      <Typography
-        style={{
-          margin: theme.spacing(1),
-          fontWeight: "bolder",
-          fontSize: "40spx",
-          color: "Black",
-        }}
-        variant="h5"
-        gutterBottom={true}
-      >
-        Simple instructions: Pick a movie and guess the year it was made🤓!
-      </Typography>
+        <Typography
+          style={{
+            margin: theme.spacing(1),
+            fontWeight: "bolder",
+            fontSize: "40spx",
+            color: "Black",
+          }}
+          variant="h3"
+          gutterBottom={true}
+        >
+          Welcome to my small game of guess and check🎮!
+        </Typography>
+        <Typography
+          style={{
+            margin: theme.spacing(1),
+            fontWeight: "bolder",
+            fontSize: "40spx",
+            color: "Black",
+          }}
+          variant="h5"
+          gutterBottom={true}
+        >
+          Simple instructions: Pick a movie and guess the genre and the year it
+          was made🤓!
+        </Typography>
 
-      <MovieSelection
-        onChange={setSelectedMovie}
-        moviesList={moviesList}
-        value={selectedMovie || null}
-        error={errorSelected}
-      />
-      <GuessYear
-        onChange={setReviewTitleValue}
-        error={error}
-        value={reviewTitleValue}
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        style={{
-          margin: theme.spacing(1),
-          fontWeight: "bolder",
-          position: "relative",
-          top: "20px",
-          minWidth: 200,
-        }}
-        endIcon={<MovieIcon />}
-        onClick={submitHandler}
-      >
-        Check!
-      </Button>
+        <Typography
+          style={{
+            margin: theme.spacing(1),
+            fontWeight: "bolder",
+            fontSize: "40spx",
+            color: "Black",
+          }}
+          variant="h6"
+          gutterBottom={true}
+        >
+          ** A movie could have multiple genres!
+        </Typography>
 
-      <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        transition={Bounce}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+        <MovieSelection
+          onChange={setSelectedMovie}
+          moviesList={moviesList}
+          value={selectedMovie || null}
+          error={errorSelected}
+        />
 
-    </Grid>
+        <GenreSelection
+          onChange={setSelectedGenre}
+          moviesList={genreList}
+          value={selectedGenre || null}
+          error={errorGenre}
+        />
+
+        <GuessYear
+          onChange={setReviewTitleValue}
+          error={error}
+          value={reviewTitleValue}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          style={{
+            margin: theme.spacing(1),
+            fontWeight: "bolder",
+            position: "relative",
+            top: "20px",
+            minWidth: 200,
+          }}
+          endIcon={<MovieIcon />}
+          onClick={submitHandler}
+        >
+          Check!
+        </Button>
+
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar
+          transition={Bounce}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </Grid>
     </MuiThemeProvider>
   );
 }
 
 const MovieSelection = (props) => {
-  
   const SelectedMovieHandler = (event) => {
     props.onChange(event.target.value || null);
   };
@@ -278,38 +374,64 @@ const MovieSelection = (props) => {
   );
 };
 
-const GuessYear = (props) => {
-    const ReviewTitleHandler = (event) => {
-      // if (/^\s/.test(v)) event.rc = false;
-      if (props.value === "") {
-        props.onChange(event.target.value.trim());
-      } else {
-        props.onChange(event.target.value);
-      }
-    };
-    return (
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justifyContent="center"
-        alignItems="flex-start"
-      >
-        <TextField
-            type="number"
-          style={{ margin: theme.spacing(1), minWidth: 200 }}
-          id="standard-secondary"
-          label="year"
-          helperText="Guess the year of the movie"
-          color="primary"
-          error={props.error}
-          onChange={ReviewTitleHandler}
-          value={props.value}
-        />
-      </Grid>
-    );
+const GenreSelection = (props) => {
+  const SelectedMovieHandler = (event) => {
+    props.onChange(event.target.value || null);
   };
-
-
+  return (
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+      justifyContent="center"
+      alignItems="flex-start"
+    >
+      <FormControl style={{ margin: theme.spacing(1), minWidth: 200 }}>
+        <InputLabel>Genre</InputLabel>
+        <Select
+          onChange={SelectedMovieHandler}
+          value={props.value || null}
+          error={props.error}
+        >
+          {props.moviesList.map((option, index) => (
+            <MenuItem value={option.genre}>{option.genre}</MenuItem>
+          ))}
+        </Select>
+        <FormHelperText>Select your guess of genre</FormHelperText>
+      </FormControl>
+    </Grid>
+  );
+};
+const GuessYear = (props) => {
+  const ReviewTitleHandler = (event) => {
+    // if (/^\s/.test(v)) event.rc = false;
+    if (props.value === "") {
+      props.onChange(event.target.value.trim());
+    } else {
+      props.onChange(event.target.value);
+    }
+  };
+  return (
+    <Grid
+      container
+      spacing={0}
+      direction="column"
+      justifyContent="center"
+      alignItems="flex-start"
+    >
+      <TextField
+        type="number"
+        style={{ margin: theme.spacing(1), minWidth: 200 }}
+        id="standard-secondary"
+        label="year"
+        helperText="Guess the year of the movie"
+        color="primary"
+        error={props.error}
+        onChange={ReviewTitleHandler}
+        value={props.value}
+      />
+    </Grid>
+  );
+};
 
 export default MyPage;

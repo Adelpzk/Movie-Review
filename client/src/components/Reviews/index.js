@@ -29,10 +29,10 @@ import Fab from "@material-ui/core/Fab";
 import NavigationIcon from "@material-ui/icons/Navigation";
 
 //Dev mode
-//const serverURL = " "; //enable for dev mode
+const serverURL = " "; //enable for dev mode
 
 //Deployment mode instructions
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100"; //enable for deployed mode; Change PORT to the port number given to you;
+//const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3100"; //enable for deployed mode; Change PORT to the port number given to you;
 //To find your port number:
 //ssh to ov-research-4.uwaterloo.ca and run the following command:
 //env | grep "PORT"
@@ -133,7 +133,7 @@ class Reviews extends Component {
 
   loadUserSettings() {
     this.callApiLoadUserSettings().then((res) => {
-      //console.log("loadUserSettings returned: ", res)
+      console.log("loadUserSettings returned: ", res)
       var parsed = JSON.parse(res.express);
       console.log("loadUserSettings parsed: ", parsed[0].mode);
       this.setState({ mode: parsed[0].mode });
@@ -313,9 +313,7 @@ const Review = (props) => {
   }
 
   const submitHandler = (event) => {
-    console.log(moviesList)
-    // console.log("from Index :" + moviesList[1].name)
-    console.log(selectedMovie)
+    
     event.preventDefault();
     
     if (

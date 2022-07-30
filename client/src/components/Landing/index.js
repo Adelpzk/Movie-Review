@@ -56,7 +56,7 @@ function Landing(props) {
           variant="h3"
           gutterBottom={true}
         >
-          Welcome to my movie review website! 
+          Welcome to my movie review website🎥! 
           <MovieIcon style={{
             color: "white",
             filter: "blur(10px)"
@@ -84,7 +84,7 @@ function Landing(props) {
           variant="h5"
           gutterBottom={true}
         >
-          To search movies based on name, actors, and director navigate to the search page🎥!
+          To search for movies in the IMDB database navigate to the search page🔎!
         </Typography>
         <Typography
           style={{

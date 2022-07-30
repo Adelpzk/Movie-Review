@@ -11,34 +11,15 @@ import Landing from '../Landing';
 
 
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      //
-    };
-  }
-
-  componentDidMount() {
-    //
-  }
-
-
-  componentWillUnmount() {
-    this.listener();
-  }
-
-
-  render() {
+const App = () => {
+ 
     return (
 	  <Router>
 	    <div>
-        <PrivateRoute exact path="/" component={Landing}/>
+        <PrivateRoute exact path="/Landing" component={Landing}/>
 	    </div>
 	  </Router>
     );
   }
-}
 
 export default App;

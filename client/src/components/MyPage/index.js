@@ -113,6 +113,8 @@ function MyPage(props) {
     loadAllGenre();
   }, []);
 
+  
+
   const loadAllGenre = () => {
     callApiGetAllGenre().then((res) => {
       console.log("LoadAllGenre Returned: " + res);
@@ -182,26 +184,40 @@ function MyPage(props) {
 
   genresOfTheMovie = selectedMovieGenre.map((obj) => obj.genre);
 
+  
+
+
+  
+
   genresOfTheMovie.filter((element) => {
     if (element.includes(selectedGenre)) {
       genreIsRight = true;
     }
   });
 
+  React.useEffect(() => {
+    if(selectedMovie !== ""){
+      getApiGenre()}
+  }, [selectedMovie]);
+
+  const getApiGenre = () => {callApiGetGenre().then((res) => {
+    console.log("callApiGetSearch returned: ", res);
+    var parsed = JSON.parse(res.express);
+    console.log("callApiGetSearch parsed: ", parsed);
+    setselectedMovieGenre(parsed);
+  });}
+
   const submitHandler = (event) => {
-    callApiGetGenre().then((res) => {
-      console.log("callApiGetSearch returned: ", res);
-      var parsed = JSON.parse(res.express);
-      console.log("callApiGetSearch parsed: ", parsed);
-      setselectedMovieGenre(parsed);
-    });
-  
+    console.log(selectedMovie + ", " + selectedGenre + ", " + reviewTitleValue + " issue : " + selectedMovieGenre)
+
+    getApiGenre()
+
     if (
       reviewTitleValue.length !== "" &&
       selectedMovie !== "" &&
       selectedGenre !== "" &&
-      reviewTitleValue == moviesList[indexMovieId].year &&
-      genreIsRight == true
+      (reviewTitleValue == moviesList[indexMovieId].year &&
+      genreIsRight == true)
     ) {
       notifyAll();
     } else if (

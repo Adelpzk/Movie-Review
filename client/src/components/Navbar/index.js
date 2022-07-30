@@ -41,11 +41,12 @@ const Navbar = () => {
       <Container maxWidth="xxl">
         <Toolbar disableGutters>
           {/* <TheatersIcon sx={{ display: { xs: 'flex', md: 'flex' }, mr: 0 }} /> */}
+          
           <Typography 
             variant="h6"
             noWrap
             component="a"
-            href="/Landing"
+            href = "/Landing"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -60,7 +61,7 @@ const Navbar = () => {
           >
             Movie Review
           </Typography>
-
+          
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"

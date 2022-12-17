@@ -1,17 +1,29 @@
-import React from "react";
-import { Router, Switch, Route } from "react-router-dom";
-import Home from '../Home';
-import history from './history';
+import React, { useEffect } from "react";
+import { Router, Switch, Route, useHistory } from "react-router-dom";
 
-export default function PrivateRoute({
-  //authenticated,
-  //...rest
-}) {
+import history from './history';
+import Navbar from "../Navbar";
+import Reviews from "../Reviews"
+import Landing from "../Landing"
+import MyPage from "../MyPage";
+import Search from "../Search"
+
+export default function PrivateRoute(){
+  const history = useHistory();
+ 
+
+  useEffect(() => {
+    history.push('/Landing');
+  }, [])
   return (
 
     <Router history={history}>
+      <Navbar/>
       <Switch>
-      <Route path="/" exact component={Home} />
+      <Route path="/Reviews" exact component={Reviews} />
+      <Route path="/Landing" exact component={Landing} />
+      <Route path="/MyPage" exact component={MyPage} />
+      <Route path="/Search" exact component={Search} />
       </Switch>
     </Router>
   );

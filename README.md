@@ -3,6 +3,7 @@
 ## Sections
 
 - [Description](#description)
+  - [Demo](#Demo)
   - [Screenshots](#screenshots)
 - [Authors](#authors)
 
@@ -14,6 +15,8 @@ Designed and developed a ReactJS, NodeJS, MySQL web-application augmenting IMDBs
 <br>
 <br>
 Web application was hosted on the AWS server used by university of waterloo, but unfortunatley has expired.
+
+### Demo
 
 ### Screenshots
 

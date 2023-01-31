@@ -20,6 +20,10 @@ Web application was hosted on the AWS server used by university of waterloo, but
 
 ### Screenshots
 
+
+https://user-images.githubusercontent.com/85805543/215640526-78e2c1a1-117a-4797-af5a-75fa4d4adc6a.mov
+
+
 **Home Page**
 <br>
 <img src="ScreenShots\MoviewReviewHome.png" height=400>
